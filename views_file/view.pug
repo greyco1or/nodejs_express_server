@@ -6,7 +6,8 @@ html
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
         title Document
     body
-        h1 Server side Javascript
+        h1 
+            a(href="/topic") Server side Javascript
         ul
             each topic in topics
                 li
@@ -14,3 +15,5 @@ html
         article 
             h2= title 
             =description
+        p
+            a(href="/topic/new") create new File

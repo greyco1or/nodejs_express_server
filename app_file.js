@@ -6,32 +6,39 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.set("views", "./views_file");
 app.set("view engine", "pug");
 app.get("/topic/new", function (req, res) {
-  res.render("new");
-});
-app.get("/topic/:id", function (req, res) {
-  var id = req.params.id;
   fs.readdir("data", function (err, files) {
     if (err) {
       return res.status(500).send("Internal Server Error");
     }
-    fs.readFile("data/" + id, "utf8", function (err, data) {
-      if (err) {
-        return res.status(500).send("Internal Server Error");
-      }
-      res.render("view", {
-        topics: files,
-        title: id,
-        description: data,
-      });
-    });
+    res.render("new", { topics: files });
   });
 });
-app.get("/topic", function (req, res) {
+app.get(["/topic", "/topic/:id"], function (req, res) {
   fs.readdir("data", function (err, files) {
     if (err) {
       return res.status(500).send("Internal Server Error");
     }
-    res.render("view", { topics: files });
+    var id = req.params.id;
+    if (id) {
+      //id 값이 있을 때
+      fs.readFile("data/" + id, "utf8", function (err, data) {
+        if (err) {
+          return res.status(500).send("Internal Server Error");
+        }
+        res.render("view", {
+          topics: files,
+          title: id,
+          description: data,
+        });
+      });
+    } else {
+      //id 값이 없을 때
+      res.render("view", {
+        topics: files,
+        title: "안내사항",
+        description: "링크를 클릭해주세요",
+      });
+    }
   });
 });
 app.post("/topic", function (req, res) {
@@ -41,7 +48,7 @@ app.post("/topic", function (req, res) {
     if (err) {
       return res.status(500).send("Internal Server Error");
     }
-    res.send("Success!");
+    res.redirect("/topic/" + title);
   });
 });
 
